@@ -1,0 +1,12 @@
+fastapi
+uvicorn
+python-multipart
+
+pymupdf
+pdfplumber
+
+sentence-transformers
+faiss-cpu
+
+numpy
+aiofiles
