@@ -7,3 +7,11 @@ venv/
 .DS_Store
 .idea/
 .vscode/
+# Vector store artifacts
+vector_store/
+services/*/vector_store/
+# Data folder
+data/
+services/*/data/
+# Python cache
+__pycache__/
