@@ -11,6 +11,7 @@ META_PATH = os.path.join(VECTOR_PATH, "meta.pkl")
 model = SentenceTransformer("all-MiniLM-L6-v2")
 
 def retrieve(query, top_k=5, score_threshold=None, source_filter=None):
+    # print(f"Retrieving for query: '{query}' with top_k={top_k}, score_threshold={score_threshold}, source_filter='{source_filter}'")
     if not os.path.exists(INDEX_PATH):
         return []
 
@@ -28,11 +29,17 @@ def retrieve(query, top_k=5, score_threshold=None, source_filter=None):
     for score, idx in zip(distances[0], indices[0]):
         metadata = metadata_store[idx]
 
-        if source_filter and metadata["source"] != source_filter:
+        if idx == -1:
             continue
 
-        if score_threshold and score > score_threshold:
-            continue
+        # Apply source filter safely
+        if source_filter is not None and source_filter != "":
+            if metadata.get("source") != source_filter:
+                continue
+
+        # Apply score threshold safely (L2 distance: smaller = better)
+        if score_threshold is not None and score > score_threshold:
+                continue
 
         results.append({
             "score": float(score),
