@@ -10,7 +10,7 @@ META_PATH = os.path.join(VECTOR_PATH, "meta.pkl")
 
 model = SentenceTransformer("all-MiniLM-L6-v2")
 
-def retrieve(query, top_k=5, score_threshold=None, source_filter=None):
+def retrieve(query, top_k=3, score_threshold=None, source_filter=None):
     # print(f"Retrieving for query: '{query}' with top_k={top_k}, score_threshold={score_threshold}, source_filter='{source_filter}'")
     if not os.path.exists(INDEX_PATH):
         return []
@@ -42,8 +42,14 @@ def retrieve(query, top_k=5, score_threshold=None, source_filter=None):
                 continue
 
         results.append({
+            "text": metadata.get("text", ""),
             "score": float(score),
-            "metadata": metadata
+            "metadata": {
+                "source": metadata.get("source"),
+                "page": metadata.get("page"),
+                "chunk_id": metadata.get("chunk_id")
+            }
         })
+
 
     return results

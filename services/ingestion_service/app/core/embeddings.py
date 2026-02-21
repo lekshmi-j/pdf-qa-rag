@@ -9,6 +9,7 @@ def embed_chunks(chunks, source):
     metadata = []
     for c in chunks:
         metadata.append({
+            "text": c["text"],
             "source": source,
             "page": c["page"],
             "chunk_id": c["chunk_id"]

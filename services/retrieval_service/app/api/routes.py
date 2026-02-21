@@ -7,7 +7,7 @@ router = APIRouter()
 
 class QueryRequest(BaseModel):
     query: str = Field(..., example="What is the refund policy?")
-    top_k: int = Field(default=5, example=5)
+    top_k: int = Field(default=3, example=3)
     score_threshold: Optional[float] = Field(
         default=2,
         example=None,
@@ -21,13 +21,14 @@ class QueryRequest(BaseModel):
 
 @router.post("/retrieve")
 def retrieve_context(request: QueryRequest):
+    print("Retrieve endpoint called")
     results = retrieve(
         query=request.query,
         top_k=request.top_k,
         score_threshold=request.score_threshold,
         source_filter=request.source
     )
-
+    
     return {
         "query": request.query,
         "contexts": results
