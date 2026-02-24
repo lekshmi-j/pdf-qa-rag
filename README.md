@@ -6,17 +6,17 @@ This project implements a production-oriented Question Answering system over PDF
 
 Unlike notebook-based prototypes, this system is intentionally built with:
 
-Microservice-style architecture
-
-Independent REST APIs
-
-Vector search infrastructure
-
-Hallucination control mechanisms
-
-Docker-based deployment
-
-Frontend client integration
+        Microservice-style architecture
+        
+        Independent REST APIs
+        
+        Vector search infrastructure
+        
+        Hallucination control mechanisms
+        
+        Docker-based deployment
+        
+        Frontend client integration
 
 The goal is to simulate how real-world AI knowledge assistants are built inside companies (legal, HR, finance, internal documentation tools).
 
@@ -28,30 +28,30 @@ Upload PDFs → Ask questions → Receive grounded answers with citations
 
 The system must:
 
-Avoid hallucinations as much as possible
-
-Separate ingestion, retrieval, and generation
-
-Be deployable and production-aware
-
-Be explainable in interviews
+        Avoid hallucinations as much as possible
+        
+        Separate ingestion, retrieval, and generation
+        
+        Be deployable and production-aware
+        
+        Be explainable in interviews
 
 🏗️ System Architecture
 
-Client (Streamlit Frontend)
-        |
-        v
--------------------------------
-|   API-based Service Layer   |
--------------------------------
-        |
-        v
----------------------------------------------------
-| Ingestion Service | Retrieval Service | RAG LLM |
----------------------------------------------------
-        |
-        v
-       Vector Database (FAISS / Chroma)
+        Client (Streamlit Frontend)
+                |
+                v
+        -------------------------------
+        |   API-based Service Layer   |
+        -------------------------------
+                |
+                v
+        ---------------------------------------------------
+        | Ingestion Service | Retrieval Service | RAG LLM |
+        ---------------------------------------------------
+                |
+                v
+               Vector Database (FAISS / Chroma)
 
 Design Principles
 
