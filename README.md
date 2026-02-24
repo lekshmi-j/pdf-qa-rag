@@ -68,6 +68,7 @@ Embedding & retrieval decoupled from generation
 Designed for independent scaling
 
 🧩 **Microservices Breakdown**
+
 **🔹 1. Document Ingestion Service**
 
 Responsibility:
