@@ -1,6 +1,6 @@
-📄 PDF RAG Q&A System
+**📄 PDF RAG Q&A System**
 Production-Style Retrieval-Augmented Generation with Microservice Architecture
-🚀 Overview
+**🚀 Overview**
 
 This project implements a production-oriented Question Answering system over PDFs using Retrieval-Augmented Generation (RAG).
 
@@ -20,7 +20,7 @@ Unlike notebook-based prototypes, this system is intentionally built with:
 
 The goal is to simulate how real-world AI knowledge assistants are built inside companies (legal, HR, finance, internal documentation tools).
 
-🎯 Problem Statement
+**🎯 Problem Statement**
 
 Build a scalable and modular system that allows users to:
 
@@ -36,7 +36,7 @@ The system must:
         
         Be explainable in interviews
 
-🏗️ System Architecture
+**🏗️ System Architecture**
 
         Client (Streamlit Frontend)
                 |
@@ -53,7 +53,7 @@ The system must:
                 v
                Vector Database (FAISS / Chroma)
 
-Design Principles
+**Design Principles:**
 
 Single responsibility per service
 
@@ -65,74 +65,74 @@ Embedding & retrieval decoupled from generation
 
 Designed for independent scaling
 
-🧩 Microservices Breakdown
-🔹 1. Document Ingestion Service
+🧩 **Microservices Breakdown**
+**🔹 1. Document Ingestion Service**
 
 Responsibility:
-PDF → Clean text → Chunking → Embeddings → Vector storage
+        PDF → Clean text → Chunking → Embeddings → Vector storage
 
 This service:
 
-Never calls an LLM
-
-Never answers questions
-
-Only prepares knowledge
+        Never calls an LLM
+        
+        Never answers questions
+        
+        Only prepares knowledge
 
 Key Concepts Implemented
 
-PDF parsing (PyMuPDF / pdfplumber)
+        PDF parsing (PyMuPDF / pdfplumber)
+        
+        Multiple chunking strategies
+        
+        Fixed-size chunks
+        
+        Overlapping chunks
+        
+        Metadata tracking (source, page, chunk_id)
+        
+        Sentence-transformer embeddings
+        
+        Vector persistence
 
-Multiple chunking strategies
 
-Fixed-size chunks
+**Endpoints**
 
-Overlapping chunks
+        POST /upload
 
-Metadata tracking (source, page, chunk_id)
-
-Sentence-transformer embeddings
-
-Vector persistence
-
-
-Endpoints
-
-POST /upload
-
-2. Retrieval Service
+**2. Retrieval Service**
 
 Responsibility:
-User query → Embedding → Top-k semantic search
+        User query → Embedding → Top-k semantic search
 
 This service:
 
-Never parses PDFs
-
-Never generates answers
-
-Only retrieves relevant context
+        Never parses PDFs
+        
+        Never generates answers
+        
+        Only retrieves relevant context
 
 Concepts Implemented
 
-Cosine similarity search
-
-Top-k tuning
-
-Score threshold filtering
-
-Metadata-based filtering
-
-Retrieval evaluation logic
+        Cosine similarity search
+        
+        Top-k tuning
+        
+        Score threshold filtering
+        
+        Metadata-based filtering
+        
+        Retrieval evaluation logic
 
 Why This Matters
 
 Retrieval quality directly determines answer quality.
 Most RAG failures originate from poor retrieval, not the LLM.
 
-Endpoint
+**Endpoint**
 
-POST /retrieve
+        POST /retrieve
 
 Returns:
 
@@ -142,45 +142,45 @@ Similarity scores
 
 Metadata
 
-3. RAG / LLM Service
+**3. RAG / LLM Service**
 
 Responsibility:
-Context + Question → Grounded answer
+        Context + Question → Grounded answer
 
 This service:
 
-Does not store embeddings
+        Does not store embeddings
+        
+        Does not parse PDFs
+        
+        Only generates answers from retrieved context
+        
+        Hallucination Control Techniques
+        
+        Context-only prompting
+        
+        Explicit abstention instructions (“If not found, say I don’t know”)
+        
+        Source citation enforcement
+        
+        Temperature control
+        
+        Context window management
 
-Does not parse PDFs
-
-Only generates answers from retrieved context
-
-Hallucination Control Techniques
-
-Context-only prompting
-
-Explicit abstention instructions (“If not found, say I don’t know”)
-
-Source citation enforcement
-
-Temperature control
-
-Context window management
-
-Prompt Engineering Strategy
+**Prompt Engineering Strategy**
 
 The model is instructed to:
 
-Answer strictly from provided context
-
-Avoid external knowledge
-
-Cite document sources
-
-Admit uncertainty when context is insufficient
+        Answer strictly from provided context
+        
+        Avoid external knowledge
+        
+        Cite document sources
+        
+        Admit uncertainty when context is insufficient
 
 Endpoint
-POST /answer
+        POST /answer
 
 Returns:
 
@@ -188,7 +188,7 @@ Generated answer
 
 Source references
 
-🖥️ Frontend
+**🖥️ Frontend**
 
 Streamlit-based UI that:
 
@@ -204,25 +204,25 @@ Contains zero business logic
 
 This maintains strict client–server separation.
 
-🧠 Core RAG Concepts Demonstrated
+**🧠 Core RAG Concepts Demonstrated**
 
-Chunking strategy trade-offs
+        Chunking strategy trade-offs
+        
+        Embedding similarity search
+        
+        Top-k sensitivity analysis
+        
+        Retrieval vs generation responsibilities
+        
+        Context window limits
+        
+        Hallucination mitigation
+        
+        Prompt discipline
+        
+        API-first system design
 
-Embedding similarity search
-
-Top-k sensitivity analysis
-
-Retrieval vs generation responsibilities
-
-Context window limits
-
-Hallucination mitigation
-
-Prompt discipline
-
-API-first system design
-
-🛠️ Tech Stack
+**🛠️ Tech Stack**
 
 | Layer        | Technology                              |
 | ------------ | --------------------------------------- |
@@ -235,7 +235,7 @@ API-first system design
 | Language     | Python                                  |
 
 
-🐳 Deployment Architecture
+**🐳 Deployment Architecture**
 
 Each service:
 
@@ -253,7 +253,7 @@ Backend services → Render / Fly.io / Railway (free tier)
 
 Frontend → Streamlit Cloud
 
-📁 Repository Structure
+**📁 Repository Structure**
 
 pdf-rag-microservices/
 │
@@ -268,8 +268,8 @@ pdf-rag-microservices/
 ├── README.md
 └── architecture.png
 
-📈 Engineering Decisions
-Why Microservices?
+**📈 Engineering Decisions**
+**Why Microservices?**
 
 Embedding models may change without affecting generation
 
@@ -279,4 +279,4 @@ Retrieval tuning doesn’t break LLM service
 
 Enables independent scaling
 
-🧪 How to Run
+**🧪 How to Run**
