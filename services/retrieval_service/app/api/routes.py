@@ -7,7 +7,7 @@ router = APIRouter()
 
 class QueryRequest(BaseModel):
     query: str = Field(..., example="What is the refund policy?")
-    top_k: int = Field(default=3, example=3)
+    top_k: int = Field(default=2, example=2)
     score_threshold: Optional[float] = Field(
         default=2,
         example=None,

@@ -1,8 +1,11 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
+from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
-from app.core.prompt_builder import build_prompt
-from app.core.llm_client import generate_answer
 import requests
+import json
+
+from app.core.prompt_builder import build_prompt
+from app.core.llm_client import stream_answer
 
 router = APIRouter()
 
@@ -11,51 +14,71 @@ RETRIEVAL_URL = "http://127.0.0.1:8001/retrieve"
 
 class AnswerRequest(BaseModel):
     question: str
-    top_k: int = 3
+    top_k: int = 2
 
 
 @router.post("/answer")
 def answer_question(request: AnswerRequest):
-    print("retrieval calling")
 
-    # 🔹 Step 1: Call Retrieval Service
-    retrieval_response = requests.post(
-        RETRIEVAL_URL,
-        json={
-            "query": request.question,
-            "top_k": request.top_k
-        }
-    )
+    print("Answer endpoint called with question:", request.question)
+    try:
+        retrieval_response = requests.post(
+            RETRIEVAL_URL,
+            json={
+                "query": request.question,
+                "top_k": request.top_k
+            },
+            timeout=None
+        )
+        print("Retrieval response status:", retrieval_response.status_code)
+    except requests.exceptions.RequestException as e:
+        raise HTTPException(status_code=500, detail=f"Retrieval service unreachable: {str(e)}")
 
     if retrieval_response.status_code != 200:
-        return {"error": "Retrieval service failed."}
+        raise HTTPException(status_code=500, detail="Retrieval service failed.")
 
     retrieval_data = retrieval_response.json()
     contexts = retrieval_data.get("contexts", [])
 
-    # 🔹 Step 2: Handle empty retrieval (Hallucination control)
     if not contexts:
-        return {
-            "answer": "I don't know based on the provided documents.",
-            "sources": []
-        }
+        def empty_stream():
+            yield json.dumps({
+                "type": "token",
+                "content": "I don't know based on the provided documents."
+            }) + "\n"
+            yield json.dumps({"type": "done"}) + "\n"
 
-    # 🔹 Step 3: Build Prompt
+        return StreamingResponse(empty_stream(), media_type="application/json")
+
     prompt = build_prompt(request.question, contexts)
 
-    # 🔹 Step 4: Call LLM
-    answer = generate_answer(prompt)
+    # Precompute sources
+    sources = sorted({
+        f"{ctx['metadata']['source']} (page {ctx['metadata']['page']})"
+        for ctx in contexts
+    })
 
-    used_sources = []
+    def token_generator():
+        try:
+            # Stream tokens
+            for token in stream_answer(prompt):
+                yield json.dumps({
+                    "type": "token",
+                    "content": token
+                }) + "\n"
 
-    for ctx in contexts:
-        source_str = f"{ctx['metadata']['source']} (page {ctx['metadata']['page']})"
-        if str(ctx["metadata"]["page"]) in answer:
-            used_sources.append(source_str)
+            # After streaming tokens, send sources
+            yield json.dumps({
+                "type": "sources",
+                "content": sources
+            }) + "\n"
 
-    used_sources = list(set(used_sources))
+            yield json.dumps({"type": "done"}) + "\n"
 
-    return {
-        "answer": answer,
-        "sources": used_sources
-    }
+        except Exception as e:
+            yield json.dumps({
+                "type": "error",
+                "content": str(e)
+            }) + "\n"
+
+    return StreamingResponse(token_generator(), media_type="application/json")
