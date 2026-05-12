@@ -186,25 +186,10 @@ This maintains strict client–server separation.
 | Vector DB    | FAISS / Chroma                         |
 | LLM          | HuggingFace API / Open models          |
 | Frontend     | Streamlit                              |
-| Deployment   | Docker + Docker Compose                |
 | Language     | Python                                 |
 
 ---
 
-## 🐳 Deployment Architecture
-
-Each service:
-- Has its own Dockerfile
-- Can be deployed independently
-- Is orchestrated using docker-compose
-
-This mirrors how production AI services are deployed.
-
-**Example deployment strategy:**
-- Backend services → Render / Fly.io / Railway (free tier)
-- Frontend → Streamlit Cloud
-
----
 
 ## 📁 Repository Structure
 
@@ -223,19 +208,4 @@ pdf-rag-microservices/
 └── architecture.png
 ```
 
----
 
-## 📈 Engineering Decisions
-
-### Why Microservices?
-
-- Embedding models may change without affecting generation
-- Vector DB can be swapped independently
-- Retrieval tuning doesn't break LLM service
-- Enables independent scaling
-
----
-
-## 🧪 How to Run
-
-(Instructions to be added)
